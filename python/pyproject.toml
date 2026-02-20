@@ -1,0 +1,15 @@
+[project]
+name = "functiongemma-bench"
+version = "0.1.0"
+description = "Smart-home tool-calling orchestrator benchmark for FunctionGemma models"
+requires-python = ">=3.10"
+dependencies = [
+  "openai>=1.30.0",
+]
+
+[build-system]
+requires = ["hatchling>=1.24.0"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+package = false

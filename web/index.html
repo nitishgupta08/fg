@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>functiongemma</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <h1>functiongemma</h1>
+        <button id="menu-toggle" class="menu-btn" type="button" aria-expanded="false" aria-controls="main-menu">
+          ☰
+        </button>
+      </header>
+
+      <nav id="main-menu" class="menu" hidden>
+        <button class="menu-item active" data-view-target="chat" type="button">Chat</button>
+        <button class="menu-item" data-view-target="benchmark" type="button">Benchmark</button>
+      </nav>
+
+      <section class="panel status-strip">
+        <strong>Model Loading:</strong>
+        <span id="models-status">Loading from /v1/models...</span>
+        <button id="reload-models" type="button" class="secondary-btn">Retry</button>
+      </section>
+
+      <section class="view panel active" data-view="chat">
+        <h2>Chat</h2>
+        <div class="chat-controls">
+          <label>
+            Model
+            <select id="chat-model" disabled></select>
+          </label>
+          <button id="chat-reset" type="button">Reset Chat</button>
+        </div>
+        <div id="chat-log" class="chat-log" aria-live="polite"></div>
+        <div class="chat-input-row">
+          <input id="chat-input" type="text" placeholder="Type a smart-home command..." />
+          <button id="chat-send" type="button" disabled>Send</button>
+        </div>
+      </section>
+
+      <section class="view panel" data-view="benchmark">
+        <h2>Benchmark</h2>
+        <div class="benchmark-controls">
+          <label>
+            Base Model
+            <select id="bench-base-model" disabled></select>
+          </label>
+          <label>
+            Distil Model
+            <select id="bench-distil-model" disabled></select>
+          </label>
+          <button id="run-benchmark" type="button" disabled>Run Benchmark</button>
+          <button id="download-report" type="button" disabled>Download JSON</button>
+        </div>
+
+        <pre id="benchmark-status" class="status">Idle.</pre>
+        <pre id="benchmark-summary" class="status">No benchmark run yet.</pre>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Case</th>
+                <th>Expected</th>
+                <th>Base Tool</th>
+                <th>Base</th>
+                <th>Base Lat</th>
+                <th>Distil Tool</th>
+                <th>Distil</th>
+                <th>Distil Lat</th>
+              </tr>
+            </thead>
+            <tbody id="benchmark-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="logs-header">
+          <h2>Logs</h2>
+          <button id="clear-logs" type="button" class="secondary-btn">Clear Logs</button>
+        </div>
+        <div id="logs" class="logs"></div>
+      </section>
+
+      <footer class="scroll-spacer" aria-hidden="true"></footer>
+    </main>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

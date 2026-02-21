@@ -6,10 +6,12 @@ backend execution for smart home control.
 
 Usage:
     Interactive:
-        python main.py --model functiongemma-270m-it-BF16 --port 8080
+        uv run main.py --model functiongemma-270m-it-BF16 --port 8080
+        uv run main.py --model distil-home-assistant-functiongemma --port 8080
+
 
     Benchmark (base vs finetuned on llama-server):
-        python main.py --benchmark \
+        uv run main.py --benchmark \
           --base-model functiongemma-270m-it-BF16 \
           --distil-model distil-home-assistant-functiongemma \
           --port 8080
@@ -24,7 +26,7 @@ import time
 
 from openai import OpenAI
 
-from benchmark import print_benchmark_report, run_benchmark
+from benchmark import add_benchmark_arguments, run_benchmark_from_args
 
 # ---------------------------------------------------------------------------
 # Tools definition (6 smart home functions)
@@ -493,39 +495,15 @@ def main() -> None:
     parser.add_argument(
         "--debug", action="store_true", help="Print raw SLM output each turn"
     )
-    parser.add_argument(
-        "--benchmark",
-        action="store_true",
-        help="Run benchmark for base vs distil model",
-    )
-    parser.add_argument(
-        "--base-model",
-        type=str,
-        default="functiongemma-270m-it",
-        help="Base model name for benchmark",
-    )
-    parser.add_argument(
-        "--distil-model",
-        type=str,
-        default="distil-functiongemma-smart-home",
-        help="Fine-tuned model name for benchmark",
-    )
+    add_benchmark_arguments(parser)
     args = parser.parse_args()
 
     if args.benchmark:
-        models = [args.base_model, args.distil_model]
-        results = [
-            run_benchmark(
-                model_name=model,
-                port=args.port,
-                api_key=args.api_key,
-                debug=args.debug,
-                slm_client_cls=SLMClient,
-                orchestrator_cls=TextOrchestrator,
-            )
-            for model in models
-        ]
-        print_benchmark_report(results)
+        run_benchmark_from_args(
+            args=args,
+            slm_client_cls=SLMClient,
+            orchestrator_cls=TextOrchestrator,
+        )
         return
 
     slm = SLMClient(model_name=args.model, api_key=args.api_key, port=args.port)

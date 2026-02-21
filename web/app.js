@@ -291,6 +291,7 @@ async function onChatSend() {
   appendChat("user", text);
   elements.chatInput.value = "";
   elements.chatSend.disabled = true;
+  const turnStart = performance.now();
 
   try {
     const response = await processUtterance(
@@ -303,10 +304,24 @@ async function onChatSend() {
       },
       { onLog: handleModelLog },
     );
+    const turnMs = performance.now() - turnStart;
 
-    appendChat("assistant", response.assistantText);
+    appendChat("assistant", `${response.assistantText} (${turnMs.toFixed(1)} ms)`);
+    addLog("response", "Chat turn completed", {
+      model,
+      turnMs: Number(turnMs.toFixed(1)),
+      assistantText: response.assistantText,
+      status: "ok",
+    });
   } catch (err) {
+    const turnMs = performance.now() - turnStart;
     addLog("error", "Chat request failed", { message: String(err) });
+    addLog("response", "Chat turn completed", {
+      model,
+      turnMs: Number(turnMs.toFixed(1)),
+      status: "error",
+      error: String(err),
+    });
     appendChat("assistant", `Error: ${String(err)}`);
   } finally {
     elements.chatSend.disabled = elements.chatModel.disabled;

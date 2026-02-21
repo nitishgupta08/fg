@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 from dataclasses import dataclass
 from typing import Any
 
@@ -116,3 +117,39 @@ def print_benchmark_report(results: list[BenchmarkResult]) -> None:
             f"{res.avg_latency_ms:14.1f} ms"
         )
     print("-" * 84)
+
+
+def add_benchmark_arguments(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--benchmark",
+        action="store_true",
+        help="Run benchmark for base vs distil model",
+    )
+    parser.add_argument(
+        "--base-model",
+        type=str,
+        default="functiongemma-270m-it",
+        help="Base model name for benchmark",
+    )
+    parser.add_argument(
+        "--distil-model",
+        type=str,
+        default="distil-functiongemma-smart-home",
+        help="Fine-tuned model name for benchmark",
+    )
+
+
+def run_benchmark_from_args(args: argparse.Namespace, slm_client_cls: Any, orchestrator_cls: Any) -> None:
+    models = [args.base_model, args.distil_model]
+    results = [
+        run_benchmark(
+            model_name=model,
+            port=args.port,
+            api_key=args.api_key,
+            debug=args.debug,
+            slm_client_cls=slm_client_cls,
+            orchestrator_cls=orchestrator_cls,
+        )
+        for model in models
+    ]
+    print_benchmark_report(results)

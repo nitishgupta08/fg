@@ -37,7 +37,7 @@ body {
 .topbar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     padding: 10px 12px;
     border: 1px solid var(--line);
     border-radius: 10px;
@@ -49,58 +49,11 @@ body {
     font-size: 1.2rem;
 }
 
-.menu-btn {
-    background: var(--accent);
-    color: var(--accent-ink);
-    border: none;
-    border-radius: 8px;
-    width: 42px;
-    height: 38px;
-    cursor: pointer;
-    font-size: 1.1rem;
-}
-
-.menu {
-    display: grid;
-    gap: 8px;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 10px;
-    background: var(--panel);
-}
-
-.menu[hidden] {
-    display: none !important;
-}
-
-.menu-item {
-    text-align: left;
-    border: 1px solid var(--line);
-    background: #f7faff;
-    color: var(--text);
-    border-radius: 8px;
-    padding: 10px 12px;
-    cursor: pointer;
-}
-
-.menu-item.active {
-    border-color: var(--accent);
-    background: #e8f1ff;
-}
-
 .panel {
     background: var(--panel);
     border: 1px solid var(--line);
     border-radius: 10px;
     padding: 14px;
-}
-
-.view {
-    display: none;
-}
-
-.view.active {
-    display: block;
 }
 
 .status-strip {
@@ -158,14 +111,6 @@ button:disabled {
     margin-bottom: 10px;
 }
 
-.benchmark-controls {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(220px, 1fr));
-    gap: 10px;
-    align-items: end;
-    margin-bottom: 10px;
-}
-
 .status {
     margin: 8px 0;
     padding: 10px;
@@ -206,23 +151,6 @@ button:disabled {
     display: grid;
     grid-template-columns: 1fr auto;
     gap: 8px;
-}
-
-.table-wrap {
-    overflow: auto;
-}
-
-table {
-    border-collapse: collapse;
-    width: 100%;
-}
-
-th,
-td {
-    border-bottom: 1px solid var(--line);
-    text-align: left;
-    padding: 8px;
-    font-size: 0.88rem;
 }
 
 .logs-header {
@@ -274,10 +202,6 @@ td {
 }
 
 @media (max-width: 860px) {
-    .benchmark-controls {
-        grid-template-columns: 1fr;
-    }
-
     .chat-controls {
         grid-template-columns: 1fr;
     }
@@ -286,51 +210,4 @@ td {
         grid-template-columns: 1fr;
     }
 
-    .table-wrap {
-        overflow: visible;
-    }
-
-    table,
-    tbody,
-    tr,
-    td {
-        display: block;
-        width: 100%;
-    }
-
-    thead {
-        display: none;
-    }
-
-    tbody {
-        display: grid;
-        gap: 10px;
-    }
-
-    tr {
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        overflow: hidden;
-        background: #fafcff;
-    }
-
-    td {
-        border-bottom: 1px solid #e8eef5;
-        display: grid;
-        grid-template-columns: 110px 1fr;
-        gap: 10px;
-        align-items: center;
-        white-space: normal;
-    }
-
-    td:last-child {
-        border-bottom: none;
-    }
-
-    td::before {
-        content: attr(data-label);
-        font-size: 0.78rem;
-        color: var(--muted);
-        font-weight: 600;
-    }
 }

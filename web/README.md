@@ -1,28 +1,24 @@
 # functiongemma web
 
-Responsive single-page app with hamburger navigation:
-- Chat page
-- Benchmark page
+Responsive single-page chat app with:
+- model discovery from `/v1/models`
+- smart-home tool-calling chat
+- request/response logs
 
 ## Behavior
-- No connection config UI.
 - On load, app immediately calls `GET /v1/models` from fixed base URL:
   - `http://127.0.0.1:8080/v1/models`
-- Loaded models populate:
-  - chat model selector
-  - benchmark base/distil selectors
-- If model loading fails, chat and benchmark actions are disabled until retry succeeds.
+- Loaded models populate the chat model selector.
+- If model loading fails, chat actions are disabled until retry succeeds.
 
 ## Logs
-Diagnostics is replaced with request/response logs.
 - Every `/v1/models` request/response is logged.
 - Every model invocation request/response/error is logged.
 - Use `Clear Logs` to reset the log stream.
 
 ## Run
-From `/Users/nitishgupta/Developer/functiongemma/web`:
-
 ```bash
+cd web
 npm install
 npm run dev
 ```
@@ -37,4 +33,11 @@ Preview build:
 
 ```bash
 npm run preview
+```
+
+Run the built files:
+
+```bash
+cd dist/
+python3 -m http.server 4173
 ```

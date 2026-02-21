@@ -8,13 +8,6 @@ Usage:
     Interactive:
         uv run main.py --model functiongemma-270m-it-BF16 --port 8080
         uv run main.py --model distil-home-assistant-functiongemma --port 8080
-
-
-    Benchmark (base vs finetuned on llama-server):
-        uv run main.py --benchmark \
-          --base-model functiongemma-270m-it-BF16 \
-          --distil-model distil-home-assistant-functiongemma \
-          --port 8080
 """
 
 from __future__ import annotations
@@ -25,8 +18,6 @@ import random
 import time
 
 from openai import OpenAI
-
-from benchmark import add_benchmark_arguments, run_benchmark_from_args
 
 # ---------------------------------------------------------------------------
 # Tools definition (6 smart home functions)
@@ -495,16 +486,7 @@ def main() -> None:
     parser.add_argument(
         "--debug", action="store_true", help="Print raw SLM output each turn"
     )
-    add_benchmark_arguments(parser)
     args = parser.parse_args()
-
-    if args.benchmark:
-        run_benchmark_from_args(
-            args=args,
-            slm_client_cls=SLMClient,
-            orchestrator_cls=TextOrchestrator,
-        )
-        return
 
     slm = SLMClient(model_name=args.model, api_key=args.api_key, port=args.port)
     orchestrator = TextOrchestrator(slm, debug=args.debug)

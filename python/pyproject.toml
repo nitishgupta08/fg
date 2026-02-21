@@ -1,7 +1,7 @@
 [project]
-name = "functiongemma-bench"
+name = "functiongemma"
 version = "0.1.0"
-description = "Smart-home tool-calling orchestrator benchmark for FunctionGemma models"
+description = "Smart-home tool-calling orchestrator for FunctionGemma models"
 requires-python = ">=3.10"
 dependencies = [
   "openai>=1.30.0",

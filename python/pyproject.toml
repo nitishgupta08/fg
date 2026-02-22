@@ -5,6 +5,7 @@ description = "Smart-home tool-calling orchestrator for FunctionGemma models"
 requires-python = ">=3.10"
 dependencies = [
   "openai>=1.30.0",
+  "requests>=2.32.5",
 ]
 
 [build-system]

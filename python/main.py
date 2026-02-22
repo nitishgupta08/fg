@@ -14,11 +14,12 @@ from __future__ import annotations
 
 import argparse
 import json
-import random
 import time
+from typing import Any
 
 from openai import OpenAI
 
+from action_executor import execute_action
 # ---------------------------------------------------------------------------
 # Tools definition (6 smart home functions)
 # ---------------------------------------------------------------------------
@@ -211,32 +212,6 @@ INDIVIDUAL_SLOT_PROMPTS: dict[str, dict[str, str]] = {
     },
 }
 
-SCENE_DESCRIPTIONS: dict[str, str] = {
-    "movie_night": "Living room lights dimmed, thermostat set to 72°F.",
-    "bedtime": "All lights off, doors locked, thermostat set to 68°F.",
-    "morning": "Kitchen and hallway lights on, thermostat set to 72°F.",
-    "away": "All lights off, all doors locked, thermostat set to 65°F.",
-    "party": "Living room and kitchen lights on, thermostat set to 70°F.",
-}
-
-ROOM_DISPLAY: dict[str, str] = {
-    "living_room": "living room",
-    "bedroom": "bedroom",
-    "kitchen": "kitchen",
-    "bathroom": "bathroom",
-    "office": "office",
-    "hallway": "hallway",
-}
-
-SUCCESS_TEMPLATES: dict[str, str] = {
-    "toggle_lights": "Done. The {display_room} lights are now {state}.",
-    "set_thermostat": "Done. Thermostat set to {temperature}°F{mode_suffix}.",
-    "lock_door": "Done. The {door} door is now {state}ed.",
-    "get_device_status": "{status_report}",
-    "set_scene": 'Done. "{scene}" scene activated. {scene_details}',
-    "intent_unclear": "",
-}
-
 # ---------------------------------------------------------------------------
 # SLM Client — stateless wrapper around an OpenAI-compatible endpoint
 # ---------------------------------------------------------------------------
@@ -417,55 +392,25 @@ class TextOrchestrator:
             return f"Could you provide {questions[0]}?"
         return f"Could you provide {', '.join(questions[:-1])}, and {questions[-1]}?"
 
-    def execute_and_respond(self, function: str, arguments: dict) -> str:
-        api_result = self.call_backend_api(function, arguments)
-        template = SUCCESS_TEMPLATES.get(function, "Done.")
-        return template.format(**arguments, **api_result)
+    def execute_and_respond(self, function: str, arguments: dict[str, Any]) -> str:
+        result = execute_action(
+            action=function,
+            arguments=arguments,
+            debug=self.debug,
+        )
 
-    def call_backend_api(self, function: str, arguments: dict) -> dict:
-        """Simulate a backend — returns extra data needed by templates."""
-        if function == "toggle_lights":
-            room = arguments.get("room", "")
-            return {"display_room": ROOM_DISPLAY.get(room, room)}
+        if result.ok:
+            return (
+                f"Done. Action '{function}' accepted (status {result.status_code}). "
+                f"Message: {result.message} "
+                f"[request_id={result.request_id}]"
+            )
 
-        if function == "set_thermostat":
-            mode = arguments.get("mode")
-            suffix = f" in {mode} mode" if mode else ""
-            return {"mode_suffix": suffix}
-
-        if function == "get_device_status":
-            return {"status_report": self._simulate_device_status(arguments)}
-
-        if function == "set_scene":
-            scene = arguments.get("scene", "")
-            return {"scene_details": SCENE_DESCRIPTIONS.get(scene, "")}
-
-        return {}
-
-    def _simulate_device_status(self, arguments: dict) -> str:
-        device_type = arguments.get("device_type", "all")
-        room = arguments.get("room", "")
-
-        if device_type == "lights":
-            state = random.choice(["on", "off"])
-            display = ROOM_DISPLAY.get(room, room) if room else "the"
-            return f"The {display} lights are currently {state}."
-
-        if device_type == "thermostat":
-            temp = random.randint(65, 75)
-            mode = random.choice(["heat", "cool", "auto"])
-            return f"The thermostat is set to {temp}°F in {mode} mode."
-
-        if device_type == "door":
-            door = room if room else "front"
-            state = random.choice(["locked", "unlocked"])
-            return f"The {door} door is currently {state}."
-
-        temp = random.randint(65, 75)
         return (
-            "Lights: mixed (some on, some off). "
-            f"Thermostat: {temp}°F. "
-            "Doors: front locked, back locked, garage unlocked."
+            f"Action failed for '{function}'. "
+            f"Status: {result.status_code if result.status_code is not None else 'n/a'}. "
+            f"Message: {result.message} "
+            f"[request_id={result.request_id}]"
         )
 
 
